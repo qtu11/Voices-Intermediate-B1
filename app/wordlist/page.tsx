@@ -251,6 +251,15 @@ export default function WordlistPage() {
 
   const { speak } = useSpeech();
 
+  const scrollCardIntoView = () => {
+    window.requestAnimationFrame(() => {
+      document.querySelector('.flip-scene')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    });
+  };
+
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -343,6 +352,11 @@ export default function WordlistPage() {
 
   useEffect(() => {
     if (viewMode !== 'FLASHCARD') return;
+    scrollCardIntoView();
+  }, [viewMode]);
+
+  useEffect(() => {
+    if (viewMode !== 'FLASHCARD') return;
 
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
@@ -417,17 +431,13 @@ export default function WordlistPage() {
   };
 
   const startReview = () => {
+    const alreadyInFlashcardMode = viewMode === 'FLASHCARD';
     setViewMode('FLASHCARD');
     setOnlyUnlearned(learnedCount < WORDLIST.length);
     setCardIndex(0);
     setIsFlipped(false);
     setShuffleNonce(0);
-    window.requestAnimationFrame(() => {
-      document.getElementById('wordlist-study')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    });
+    if (alreadyInFlashcardMode) scrollCardIntoView();
   };
 
   const resetProgress = () => {
@@ -897,7 +907,16 @@ export default function WordlistPage() {
                           </button>
                         </div>
 
-                        <div className="mt-5">
+                        <div className="mt-4 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                          <h2 className="font-display text-2xl font-semibold leading-tight text-ink">
+                            {currentCard.word}
+                          </h2>
+                          <span className="font-mono text-[10px] text-ink-muted">
+                            {currentCard.phonetic}
+                          </span>
+                        </div>
+
+                        <div className="mt-3">
                           <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-ink-muted">
                             Nghĩa tiếng Việt
                           </p>
@@ -934,7 +953,7 @@ export default function WordlistPage() {
                           </div>
                         </div>
 
-                        <div className="mt-auto pt-5">
+                        <div className="sticky bottom-0 mt-auto bg-gradient-to-t from-[#fbf8f1] via-[#fbf8f1] to-transparent pt-4">
                           <button
                             type="button"
                             onClick={() => toggleLearned(currentCard.id)}
@@ -962,6 +981,7 @@ export default function WordlistPage() {
                   <button
                     type="button"
                     onClick={goPrev}
+                    aria-label="Thẻ trước"
                     className="btn-secondary px-3 text-xs sm:px-5"
                   >
                     <ChevronLeft className="h-4 w-4" />
@@ -978,6 +998,7 @@ export default function WordlistPage() {
                   <button
                     type="button"
                     onClick={goNext}
+                    aria-label="Thẻ sau"
                     className="btn-secondary px-3 text-xs sm:px-5"
                   >
                     <span className="hidden sm:inline">Sau</span>
