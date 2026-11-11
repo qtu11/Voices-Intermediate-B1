@@ -1,0 +1,6 @@
+{
+  "name": "Voices B1 Study Companion",
+  "description": "A comprehensive study tool for Voices Intermediate B1 (Units 5-10) featuring vocabulary, grammar, practice quizzes, and reading comprehension.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
